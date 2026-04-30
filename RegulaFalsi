@@ -1,6 +1,8 @@
+import numpy as np
+import matplotlib.pyplot as plt
 import math
 
-fungsi_str = input("Masukkan fungsi f(x), contoh: x**3 - x - 2 : ")
+fungsi_str = input("Masukkan fungsi f(x), contoh: exp(-x) - x : ")
 
 def f(x):
     return eval(fungsi_str, {
@@ -16,31 +18,57 @@ def f(x):
         "abs": abs
     })
 
-def secant(x0, x1, tol, max_iter):
-    print("\n=== METODE SECANT ===")
-    print("Iterasi\t x0\t\t x1\t\t x2\t\t f(x2)")
+def regula_falsi(xl, xu, tol, max_iter):
+    print("\n=== METODE REGULA FALSI ===")
+
+    if f(xl) * f(xu) > 0:
+        print("Interval tidak valid. f(xl) dan f(xu) harus beda tanda.")
+        return None
+
+    print("Iterasi\t xl\t\t xu\t\t xr\t\t f(xr)")
+    xr_old = xl
 
     for i in range(1, max_iter + 1):
-        if f(x1) - f(x0) == 0:
-            print("Metode gagal: pembagian nol.")
-            return None
+        xr = (xu * f(xl) - xl * f(xu)) / (f(xl) - f(xu))
 
-        x2 = x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0))
+        print(f"{i}\t {xl:.6f}\t {xu:.6f}\t {xr:.6f}\t {f(xr):.6f}")
 
-        print(f"{i}\t {x0:.6f}\t {x1:.6f}\t {x2:.6f}\t {f(x2):.6f}")
+        if abs(xr - xr_old) < tol or abs(f(xr)) < tol:
+            print("\nAkar ditemukan:", xr)
+            return xr
 
-        if abs(x2 - x1) < tol or abs(f(x2)) < tol:
-            print("\nAkar ditemukan:", x2)
-            return x2
+        if f(xl) * f(xr) < 0:
+            xu = xr
+        else:
+            xl = xr
 
-        x0, x1 = x1, x2
+        xr_old = xr
 
     print("Tidak konvergen.")
     return None
 
-x0 = float(input("Masukkan x0: "))
-x1 = float(input("Masukkan x1: "))
+def tampilkan_grafik(root, a, b):
+    x = np.linspace(a - 2, b + 2, 400)
+    y = [f(i) for i in x]
+
+    plt.axhline(0)
+    plt.axvline(0)
+    plt.plot(x, y, label="f(x)")
+
+    if root is not None:
+        plt.scatter(root, f(root), label=f"Akar = {root:.6f}")
+
+    plt.title("Grafik Fungsi Regula Falsi")
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+xl = float(input("Masukkan batas bawah xl: "))
+xu = float(input("Masukkan batas atas xu: "))
 tol = float(input("Masukkan toleransi error, contoh 0.000001: "))
 max_iter = int(input("Masukkan maksimum iterasi: "))
 
-secant(x0, x1, tol, max_iter)
+root = regula_falsi(xl, xu, tol, max_iter)
+tampilkan_grafik(root, xl, xu)
