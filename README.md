@@ -1,5 +1,6 @@
 # Pratikum-1-KOMNUM-E
 
+Kelompok 16
 |    NRP     |           Nama             |
 | :--------: |       :------------:       |
 | 5025251190 | Sayyid Faiz Al Izzuddin                 |
